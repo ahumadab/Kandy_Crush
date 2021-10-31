@@ -121,7 +121,7 @@ class KandyCrush extends React.Component
                     {
                         console.log(`row of four detected @${i}`);
                         const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
-                            if (index === rowOfFour[0] || index === rowOfFour[1] || index === rowOfFour[2] || index === rowOfFour[4])
+                            if (index === rowOfFour[0] || index === rowOfFour[1] || index === rowOfFour[2] || index === rowOfFour[3])
                             {
                                 return ""
                             }
@@ -156,6 +156,31 @@ class KandyCrush extends React.Component
         }
     }
 
+    dragStart = (event) =>
+    {
+        this.setState({ candyBeingDragged: event.target})
+    }
+
+    dragDrop = (event) =>
+    {
+        this.setState({ candyBeingReplaced: event.target})
+    }
+
+    dragEnd = (event) =>
+    {
+        const currentColorArrangement = [...this.state.currentColorArrangement]
+        const candyBeingReplacedId = parseInt(this.state.candyBeingReplaced.getAttribute('data-id'))
+        const candyBeingDraggedId = parseInt(this.state.candyBeingDragged.getAttribute('data-id'))
+
+        currentColorArrangement[candyBeingReplacedId] = this.state.candyBeingDragged.style.backgroundColor
+        currentColorArrangement[candyBeingDraggedId] = this.state.candyBeingReplaced.style.backgroundColor
+        this.setState({ currentColorArrangement })
+
+        
+    }
+
+    
+
     componentDidMount = () =>
     {
         this.createBoard()
@@ -183,11 +208,19 @@ class KandyCrush extends React.Component
         return (
             <div className="game" style={{ gridTemplateColumns: repeat(this.state.width, '1fr') }}>
                 {this.state.currentColorArrangement.map((candyColor, index) => (
-                    <Candy 
-                        color={candyColor}
-                        index={index}
-                        width={this.state.width}
-                    />
+                    <img 
+                        key={index}
+                        style={{ backgroundColor: candyColor }} 
+                        alt={index}
+                        draggable={true}
+                        data-id={index}
+                        onDragStart={this.dragStart}
+                        onDragOver={ (e) => e.preventDefault() }
+                        onDragEnter={ (e) => e.preventDefault() }
+                        onDragLeave={ (e) => e.preventDefault() }
+                        onDrop={this.dragDrop}
+                        onDragEnd={this.dragEnd}
+                />
                 ))}
             </div>
         )

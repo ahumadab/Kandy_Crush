@@ -174,7 +174,21 @@ class KandyCrush extends React.Component
 
         currentColorArrangement[candyBeingReplacedId] = this.state.candyBeingDragged.style.backgroundColor
         currentColorArrangement[candyBeingDraggedId] = this.state.candyBeingReplaced.style.backgroundColor
-        this.setState({ currentColorArrangement })
+
+        const validMoves = [
+            candyBeingDraggedId - 1,
+            candyBeingDraggedId - this.state.width,
+            candyBeingDraggedId + 1,
+            candyBeingDraggedId + this.state.width
+        ]
+        const validMove = validMoves.includes(candyBeingReplacedId)
+
+        if (validMove) 
+        {
+            this.setState({ currentColorArrangement })
+        }
+
+        
 
         
     }

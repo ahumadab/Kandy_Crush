@@ -7,7 +7,7 @@ class KandyCrush extends React.Component
     {
         super()
         this.state = {
-            width: 10,
+            width: 8,
             candyColors: ["blue", "green", "orange", "purple", "red", "yellow"],
             currentColorArrangement: []
         }
@@ -37,7 +37,7 @@ class KandyCrush extends React.Component
                 const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
                     if (index === columnOfThree[0] || index === columnOfThree[1] || index === columnOfThree[2])
                     {
-                        return `blank${index}`
+                        return ""
                     }
                     return color
                 })
@@ -59,7 +59,7 @@ class KandyCrush extends React.Component
                 const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
                     if (index === columnOfFour[0] || index === columnOfFour[1] || index === columnOfFour[2] || index === columnOfFour[3])
                     {
-                        return `blank${index}`
+                        return ""
                     }
                     return color
                 })
@@ -89,7 +89,7 @@ class KandyCrush extends React.Component
                         const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
                             if (index === rowOfThree[0] || index === rowOfThree[1] || index === rowOfThree[2])
                             {
-                                return `blank${index}`
+                                return ""
                             }
                             return color
                         })
@@ -123,7 +123,7 @@ class KandyCrush extends React.Component
                         const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
                             if (index === rowOfFour[0] || index === rowOfFour[1] || index === rowOfFour[2] || index === rowOfFour[4])
                             {
-                                return `blank${index}`
+                                return ""
                             }
                             return color
                         })
@@ -133,6 +133,26 @@ class KandyCrush extends React.Component
                 }
             }
             
+        }
+    }
+
+    moveIntoSquareBelow = () =>
+    {
+        const currentColorArrangement = [...this.state.currentColorArrangement]
+        for (let i = 0; i < this.state.width*this.state.width; i++)
+        {
+            if (i < this.state.width && currentColorArrangement[i] === "")
+            {
+                const randomNumber = Math.floor(Math.random() * this.state.candyColors.length)
+                currentColorArrangement[i] = this.state.candyColors[randomNumber]
+                this.setState({ currentColorArrangement })
+            }
+            if (currentColorArrangement[i + this.state.width] === "")
+            {
+                currentColorArrangement[i+this.state.width] = currentColorArrangement[i]
+                currentColorArrangement[i] = ""
+                this.setState({ currentColorArrangement })
+            }
         }
     }
 
@@ -147,10 +167,11 @@ class KandyCrush extends React.Component
         {
             const timer = setInterval(()=>{
                 this.checkForColumnOfFour()
-                this.checkForColumnOfThree()
                 this.checkForRowOfFour()
+                this.checkForColumnOfThree()
                 this.checkForRowOfThree()
-            }, 1000)
+                this.moveIntoSquareBelow()
+            }, 100)
             console.log('currentColorArrangement has changed');
             return () => clearInterval(timer)
         }

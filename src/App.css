@@ -1,0 +1,12 @@
+.App {
+  display: flex;
+  padding: 30px;
+}
+
+
+.game {
+  width: 50em;
+  height: 50em;
+  display: grid;
+}
+

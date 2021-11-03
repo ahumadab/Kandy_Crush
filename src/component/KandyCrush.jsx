@@ -8,6 +8,7 @@ class KandyCrush extends React.Component
         super()
         this.state = {
             width: 8,
+            blank: "",
             candyColors: ["blue", "green", "orange", "purple", "red", "yellow"],
             currentColorArrangement: []
         }
@@ -24,51 +25,35 @@ class KandyCrush extends React.Component
         this.setState({ currentColorArrangement: randomColorArrangement })
     }
 
-    checkForColumnOfThree = () =>
+    checkForColumnOfThree = (colorArrangement) =>
     {
         for (let i = 0; i < (this.state.currentColorArrangement.length - (this.state.width*2)); i++)
         {
             const columnOfThree = [i, i + this.state.width, i + this.state.width * 2]
-            const decidedColor = this.state.currentColorArrangement[i]
+            const decidedColor = colorArrangement[i]
 
-            if ( columnOfThree.every(candy =>this.state.currentColorArrangement[candy] === decidedColor))
+            if ( columnOfThree.every(candy =>colorArrangement[candy] === decidedColor))
             {
-                console.log(`column of three detected @${i}`);
-                const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
-                    if (index === columnOfThree[0] || index === columnOfThree[1] || index === columnOfThree[2])
-                    {
-                        return ""
-                    }
-                    return color
-                })
-                this.setState({ currentColorArrangement: newColorArrangement })
+                return columnOfThree
             }
         }
     }
 
-    checkForColumnOfFour = () =>
+    checkForColumnOfFour = (colorArrangement) =>
     {
-        for (let i = 0; i < (this.state.currentColorArrangement.length - (this.state.width*3)); i++)
+        for (let i = 0; i < (colorArrangement.length - (this.state.width*3)); i++)
         {
             const columnOfFour = [i, i + this.state.width, i + this.state.width * 2, i + this.state.width * 3]
-            const decidedColor = this.state.currentColorArrangement[i]
+            const decidedColor = colorArrangement[i]
 
-            if ( columnOfFour.every(candy =>this.state.currentColorArrangement[candy] === decidedColor))
+            if ( columnOfFour.every(candy =>colorArrangement[candy] === decidedColor))
             {
-                console.log(`column of four detected @${i}`);
-                const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
-                    if (index === columnOfFour[0] || index === columnOfFour[1] || index === columnOfFour[2] || index === columnOfFour[3])
-                    {
-                        return ""
-                    }
-                    return color
-                })
-                this.setState({ currentColorArrangement: newColorArrangement })
+                return columnOfFour
             }
         }
     }
 
-    checkForRowOfThree = () =>
+    checkForRowOfThree = (colorArrangement) =>
     {
         const max = Math.pow(this.state.width, 2)
         forI : for (let i = 0; i < max; i++)
@@ -82,18 +67,10 @@ class KandyCrush extends React.Component
                 else if (i <= j-3 )
                 {
                     const rowOfThree = [i, i + 1, i + 2]
-                    const decidedColor = this.state.currentColorArrangement[i]
-                    if (rowOfThree.every(candy => this.state.currentColorArrangement[candy] === decidedColor))
+                    const decidedColor = colorArrangement[i]
+                    if (rowOfThree.every(candy => colorArrangement[candy] === decidedColor))
                     {
-                        console.log(`row of three detected @${i}`);
-                        const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
-                            if (index === rowOfThree[0] || index === rowOfThree[1] || index === rowOfThree[2])
-                            {
-                                return ""
-                            }
-                            return color
-                        })
-                        this.setState({ currentColorArrangement: newColorArrangement })
+                        return rowOfThree
                     }
                     break forJ
                 }
@@ -102,7 +79,7 @@ class KandyCrush extends React.Component
         }
     }
 
-    checkForRowOfFour = () =>
+    checkForRowOfFour = (colorArrangement) =>
     {
         const max = Math.pow(this.state.width, 2)
         forI : for (let i = 0; i < max; i++)
@@ -116,18 +93,10 @@ class KandyCrush extends React.Component
                 else if (i <= j-3 )
                 {
                     const rowOfFour = [i, i + 1, i + 2, i + 3]
-                    const decidedColor = this.state.currentColorArrangement[i]
-                    if (rowOfFour.every(candy => this.state.currentColorArrangement[candy] === decidedColor))
+                    const decidedColor = colorArrangement[i]
+                    if (rowOfFour.every(candyIndex => colorArrangement[candyIndex] === decidedColor))
                     {
-                        console.log(`row of four detected @${i}`);
-                        const newColorArrangement = this.state.currentColorArrangement.map((color, index) => {
-                            if (index === rowOfFour[0] || index === rowOfFour[1] || index === rowOfFour[2] || index === rowOfFour[3])
-                            {
-                                return ""
-                            }
-                            return color
-                        })
-                        this.setState({ currentColorArrangement: newColorArrangement })
+                        return rowOfFour
                     }
                     break forJ
                 }
@@ -136,21 +105,56 @@ class KandyCrush extends React.Component
         }
     }
 
+    deleteCandies = (candiesToBeDeleted) =>
+    {
+        const currentColorArrangement = [...this.state.currentColorArrangement]
+        candiesToBeDeleted.forEach(index => {
+            currentColorArrangement[index] = this.state.blank
+        })
+        this.setState({ currentColorArrangement })
+    }
+
+    checkCandies = (colorArrangement) =>
+    {
+        if (!colorArrangement) colorArrangement = [...this.state.currentColorArrangement]
+
+        const collumnOfThree = this.checkForColumnOfThree(colorArrangement)
+        const collumnOfFour = this.checkForColumnOfFour(colorArrangement)
+        const rowOfThree = this.checkForRowOfThree(colorArrangement)
+        const rowOfFour = this.checkForRowOfFour(colorArrangement)
+        if (collumnOfFour)
+        {
+            return collumnOfFour
+        }
+        else if (rowOfFour)
+        {
+            return rowOfFour
+        }
+        else if (collumnOfThree)
+        {
+            return collumnOfThree
+        }
+        else if (rowOfThree)
+        {
+            return rowOfThree
+        }
+    }
+
     moveIntoSquareBelow = () =>
     {
         const currentColorArrangement = [...this.state.currentColorArrangement]
         for (let i = 0; i < this.state.width*this.state.width; i++)
         {
-            if (i < this.state.width && currentColorArrangement[i] === "")
+            if (i < this.state.width && currentColorArrangement[i] === this.state.blank)
             {
                 const randomNumber = Math.floor(Math.random() * this.state.candyColors.length)
                 currentColorArrangement[i] = this.state.candyColors[randomNumber]
                 this.setState({ currentColorArrangement })
             }
-            if (currentColorArrangement[i + this.state.width] === "")
+            if (currentColorArrangement[i + this.state.width] === this.state.blank)
             {
                 currentColorArrangement[i+this.state.width] = currentColorArrangement[i]
-                currentColorArrangement[i] = ""
+                currentColorArrangement[i] = this.state.blank
                 this.setState({ currentColorArrangement })
             }
         }
@@ -172,6 +176,7 @@ class KandyCrush extends React.Component
         const candyBeingReplacedId = parseInt(this.state.candyBeingReplaced.getAttribute('data-id'))
         const candyBeingDraggedId = parseInt(this.state.candyBeingDragged.getAttribute('data-id'))
 
+
         currentColorArrangement[candyBeingReplacedId] = this.state.candyBeingDragged.style.backgroundColor
         currentColorArrangement[candyBeingDraggedId] = this.state.candyBeingReplaced.style.backgroundColor
 
@@ -183,14 +188,12 @@ class KandyCrush extends React.Component
         ]
         const validMove = validMoves.includes(candyBeingReplacedId)
 
-        if (validMove) 
+        const checkCandies = this.checkCandies(currentColorArrangement)
+        
+        if (validMove && checkCandies) 
         {
-            this.setState({ currentColorArrangement })
-        }
-
-        
-
-        
+            this.deleteCandies(checkCandies)
+        }      
     }
 
     
@@ -205,10 +208,8 @@ class KandyCrush extends React.Component
         if (prevState.currentColorArrangement !== this.state.currentColorArrangement)
         {
             const timer = setInterval(()=>{
-                this.checkForColumnOfFour()
-                this.checkForRowOfFour()
-                this.checkForColumnOfThree()
-                this.checkForRowOfThree()
+                const candiesToBeDeleted = this.checkCandies(this.state.currentColorArrangement)
+                if (candiesToBeDeleted) this.deleteCandies(candiesToBeDeleted)
                 this.moveIntoSquareBelow()
             }, 100)
             console.log('currentColorArrangement has changed');
@@ -246,7 +247,7 @@ export default KandyCrush
 
 const repeat = (value, param) =>
 {
-    let string = ""
+    let string =""
     for (let i = 0; i < value; i++)
     {
         string+=`${param} `

@@ -56,7 +56,7 @@ class KandyCrush extends React.Component
     checkForRowOfThree = (colorArrangement) =>
     {
         const max = Math.pow(this.state.width, 2)
-        forI : for (let i = 0; i < max; i++)
+        for (let i = 0; i < max; i++)
         {
             forJ : for (let j = this.state.width; j < max+1; j+=this.state.width)
             {
@@ -221,6 +221,7 @@ class KandyCrush extends React.Component
     render = () =>
     {
         return (
+            <>
             <div className="game" style={{ gridTemplateColumns: repeat(this.state.width, '1fr') }}>
                 {this.state.currentColorArrangement.map((candyColor, index) => (
                     <img 
@@ -238,6 +239,7 @@ class KandyCrush extends React.Component
                 />
                 ))}
             </div>
+            </>
         )
     }
 
